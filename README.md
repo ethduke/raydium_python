@@ -21,7 +21,7 @@ It is up to the user to fetch the pool ids via the Raydium API or via RPC method
 **If you can - please support my work and donate to: 3pPK76GL5ChVFBHND54UfBMtg36Bsh1mzbQPTbcK89PD**
 
 
-### Contact
+# Contact
 
 My services are for **hire**. 
 
@@ -34,7 +34,7 @@ READ THE FAQS BEFORE CONTACTING ME.
 Telegram: @AL_THE_BOT_FATHER
 
 
-### FAQS
+# FAQS
 
 **What format should my private key be in?** 
 
