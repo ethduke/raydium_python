@@ -2,15 +2,24 @@
 
 Python library to trade on AMM v4, CPMM and CLMM Raydium pools. 
 
-solana Version: 0.35.0
-
-solders Version: 0.21.0
+solana Version: 0.35.0 | solders Version: 0.21.0
 
 Updated: 12/27/2024
 
+
+# Instructions
+
 Clone the repo, and add your Private Key (Base58 string) and RPC to the config.py.
 
+**When swapping, you must use the pool id, also known as the pair address. Do not use the mint aka token address.** 
+
+We cannot pass the mint directly because there can be several pools for a single mint.
+
+It is up to the user to fetch the pool ids via the Raydium API or via RPC methods I've included. 
+
+
 **If you can - please support my work and donate to: 3pPK76GL5ChVFBHND54UfBMtg36Bsh1mzbQPTbcK89PD**
+
 
 ### Contact
 
@@ -23,6 +32,7 @@ I am not your personal tech support.
 READ THE FAQS BEFORE CONTACTING ME. 
 
 Telegram: @AL_THE_BOT_FATHER
+
 
 ### FAQS
 
