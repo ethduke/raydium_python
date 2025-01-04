@@ -432,13 +432,7 @@ def get_amm_v4_reserves(pool_keys: AmmV4PoolKeys) -> tuple:
         base_vault = pool_keys.base_vault
         base_decimal = pool_keys.base_decimals
         base_mint = pool_keys.base_mint
-        
-        balances_response = client.get_multiple_accounts_json_parsed(
-            [quote_vault, base_vault], 
-            Processed
-        )
-        balances = balances_response.value
-
+    
         balances_response = client.get_multiple_accounts_json_parsed(
             [quote_vault, base_vault], 
             Processed
