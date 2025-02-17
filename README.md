@@ -8,7 +8,7 @@ Python library to trade on AMM v4, CPMM and CLMM Raydium pools.
 pip install solana==0.35.0 solders==0.21.0 bitstring==4.3.0
 ```
 
-Updated: 12/27/2024
+Updated: 2/17/2025
 
 
 # Instructions
@@ -27,15 +27,13 @@ It is up to the user to fetch the pool ids via the Raydium API or via RPC method
 
 # Contact
 
-My services are for **hire**. 
+My services are for **hire**.  
 
-Contact me if you need help integrating the code into your own project. 
+I am not your personal tech support and my time is not free. 
 
-I am not your personal tech support. 
+READ THE FAQS BEFORE CONTACTING ME!!!
 
-READ THE FAQS BEFORE CONTACTING ME. 
-
-Telegram: @AL_THE_BOT_FATHER
+Telegram: @AL_THE_BOT_FATHER 
 
 
 # FAQS
