@@ -69,7 +69,7 @@ def buy(pair_address: str, sol_in: float = 0.1, slippage: int = 1) -> bool:
         token_account_instruction = None
         print("Token account found.")
     else:
-        token_account = get_associated_token_address(payer_keypair.pubkey(), mint)
+        token_account = get_associated_token_address(payer_keypair.pubkey(), mint, token_program)
         token_account_instruction = create_associated_token_account(
             payer_keypair.pubkey(), payer_keypair.pubkey(), mint, token_program
         )
@@ -199,9 +199,7 @@ def sell(pair_address: str, percentage: int = 100, slippage: int = 1) -> bool:
 
         amount_in = int(token_balance * 10**token_decimal)
         print(f"Amount In: {amount_in} | Minimum Amount Out: {minimum_amount_out}")
-        token_account = get_associated_token_address(
-            payer_keypair.pubkey(), mint, token_program_id
-        )
+        token_account = get_associated_token_address(payer_keypair.pubkey(), mint, token_program_id)
 
         print("Generating seed and creating WSOL account...")
         seed = base64.urlsafe_b64encode(os.urandom(24)).decode("utf-8")
@@ -265,7 +263,7 @@ def sell(pair_address: str, percentage: int = 100, slippage: int = 1) -> bool:
             print("Preparing to close token account after swap...")
             close_token_account_instruction = close_account(
                 CloseAccountParams(
-                    program_id=TOKEN_PROGRAM_ID,
+                    program_id=token_program_id,
                     account=token_account,
                     dest=payer_keypair.pubkey(),
                     owner=payer_keypair.pubkey(),
