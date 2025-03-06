@@ -195,7 +195,7 @@ def sell(pair_address: str, percentage: int = 100) -> bool:
         print(f"Amount In: {token_balance} | Estimated Amount Out: {sol_out}")
         
         amount = int(token_balance * 10**token_decimal)
-        token_account = get_associated_token_address(payer_keypair.pubkey(), mint)
+        token_account = get_associated_token_address(payer_keypair.pubkey(), mint, token_program)
 
         print("Generating seed and creating WSOL account...")
         seed = base64.urlsafe_b64encode(os.urandom(24)).decode("utf-8")
