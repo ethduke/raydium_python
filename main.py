@@ -17,16 +17,18 @@ def main():
     
     # Example 2: Buy a token using its mint address
     # Uncomment the line below and replace the token_mint_address to execute a real trade
-    success = raydium.buy_by_token(token_mint_address, 
-                                   sol_in=0.001, 
-                                   slippage=1)
+    #success = raydium.buy_by_token(token_mint_address, 
+    #                               sol_in=0.001, 
+    #                               slippage=1)
     
-    print(f"Buy transaction successful: {success}")
+    #print(f"Buy transaction successful: {success}")
     
     # Example 3: Sell a token using its mint address
     # Uncomment the line below and replace the token_mint_address to execute a real trade
-    # success = raydium.sell_by_token(token_mint_address, percentage=50, slippage=1)
-    # print(f"Sell transaction successful: {success}")
+    success = raydium.sell_by_token(token_mint_address, 
+                                    percentage=50, 
+                                    slippage=1)
+    print(f"Sell transaction successful: {success}")
 
 if __name__ == "__main__":
     main()

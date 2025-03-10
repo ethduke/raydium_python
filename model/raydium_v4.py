@@ -84,14 +84,31 @@ class RaydiumV4:
         Args:
             amount_out (float): The estimated output amount
             slippage (int): Slippage percentage
-            decimal (int): Decimal places for the output amount
+            decimal (int): Decimal places for the output amount (or the decimal multiplier itself)
         
         Returns:
             int: Minimum amount out with slippage adjustment
         """
+        logger = logging.getLogger(__name__)
+        logger.info(f"Calculating minimum amount out with slippage {slippage}%")
+        
+        # Apply slippage adjustment
         slippage_adjustment = 1 - (slippage / 100)
+        logger.info(f"Slippage adjustment: {slippage_adjustment}")
+        
         amount_out_with_slippage = amount_out * slippage_adjustment
-        return int(amount_out_with_slippage * 10**decimal)
+        logger.info(f"Amount out with slippage: {amount_out_with_slippage}")
+        
+        # Handle both decimal places (e.g., 9) and multipliers (e.g., 1000000000)
+        if decimal > 100:  # It's a multiplier
+            logger.info(f"Using direct multiplication with decimal: {decimal}")
+            result = int(amount_out_with_slippage * decimal)
+        else:  # It's decimal places
+            logger.info(f"Using power of 10^{decimal} for calculation")
+            result = int(amount_out_with_slippage * (10 ** decimal))
+        
+        logger.info(f"Final minimum amount out: {result}")
+        return result
 
     @staticmethod
     def sol_for_tokens(sol_amount: float, base_vault_balance: float, quote_vault_balance: float, swap_fee: float = 0.25) -> float:

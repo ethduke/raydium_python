@@ -15,7 +15,7 @@ programs:
 tokens:
   wsol:
     address: "So11111111111111111111111111111111111111112"
-    decimal: 1000000000  # 1e9
+    decimal: 1000000000  # 10^9 (multiplier, not decimal places)
   default_quote_mint: "So11111111111111111111111111111111111111112"
 
 constants:

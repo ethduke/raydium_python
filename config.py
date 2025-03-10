@@ -90,10 +90,7 @@ class Config:
         """Get wallet keypair"""
         try:
             private_key = self._config['env']['acc_private_key'].strip()
-            print(f"Private key length: {len(private_key)}")
-            print(f"First few characters: {private_key[:10]}...")
-            print(f"Is base64-like? {all(c in '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/=' for c in private_key)}")
-            
+          
             if private_key.startswith('[') and private_key.endswith(']'):
                 key_array = [int(x.strip()) for x in private_key[1:-1].split(',')]
                 keypair = Keypair.from_bytes(bytes(key_array))
