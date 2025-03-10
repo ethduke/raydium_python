@@ -1,65 +1,76 @@
-# raydium_py
+# Raydium API
 
-Python library to trade on AMM v4, CPMM and CLMM Raydium pools. 
+A Python client for interacting with the Raydium DEX on Solana blockchain.
 
-***NOTE: CLMM IS STILL A WORK IN PROGRESS - I AM LOOKING FOR HELP!***
+## Installation
 
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/raydium_python.git
+cd raydium_python
+
+# Setup virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
 ```
-pip install solana==0.35.0 solders==0.21.0 bitstring==4.3.0
+
+## Configuration
+
+1. Create a `.env` file in the project root
+2. Add your Helius API key and account private key:
+```
+HELIUS_API_KEY=your_helius_api_key
+ACC_PRIVATE_KEY=your_private_key
 ```
 
-Updated: 2/17/2025
+## Quick Start
 
+```python
+from model.raydium_v4 import RaydiumV4
 
-# Instructions
+# Initialize the client
+client = RaydiumV4()
 
-Clone the repo, and add your Private Key (Base58 string) and RPC to the config.py.
+# Buy tokens with SOL using pair address
+buy_result = client.buy(
+    pair_address="58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2",  # SOL/USDC pair
+    sol_in=0.1,      # Amount of SOL to spend
+    slippage=5       # 5% slippage
+)
 
-**When swapping, you must use the pool id, also known as the pair address. Do not use the mint aka token address.** 
+# Buy tokens with SOL using token mint address
+buy_by_token_result = client.buy_by_token(
+    token_mint_address="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",  # USDC
+    sol_in=0.1,      # Amount of SOL to spend
+    slippage=5       # 5% slippage
+)
 
-We cannot pass the mint directly because there can be several pools for a single mint.
+# Sell tokens for SOL using pair address
+sell_result = client.sell(
+    pair_address="58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2",  # SOL/USDC pair
+    percentage=100,  # Sell 100% of tokens
+    slippage=5       # 5% slippage
+)
 
-It is up to the user to fetch the pool ids via the Raydium API or via RPC methods I've included. 
+# Sell tokens for SOL using token mint address
+sell_by_token_result = client.sell_by_token(
+    token_mint_address="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",  # USDC
+    percentage=50,   # Sell 50% of tokens
+    slippage=5       # 5% slippage
+)
+```
 
+## Features
 
-**If you can - please support my work and donate to: 3pPK76GL5ChVFBHND54UfBMtg36Bsh1mzbQPTbcK89PD**
+- SOL/Token swaps (buy and sell operations)
+- Support for trading by pair address or token mint address
+- Customizable slippage protection
+- Real-time price calculations
+- Built on Solana's fast and low-cost blockchain
 
-If you use my code, please give me credit in your project! 
+## License
 
-
-# Contact
-
-My services are for **hire**.  
-
-I am not your personal tech support and my time is not free. 
-
-READ THE FAQS BEFORE CONTACTING ME!!!
-
-Telegram: @AL_THE_BOT_FATHER 
-
-
-# FAQS
-
-**What format should my private key be in?** 
-
-The private key should be in the base58 string format, not bytes. 
-
-**Why are my transactions being dropped?** 
-
-You get what you pay for. Don't use the main-net RPC, just spend the money for Helius or Quick Node.
-
-**How do I change the fee?** 
-
-Modify the UNIT_BUDGET and UNIT_PRICE in the config.py. 
-
-**Why is this failing for USDC pairs?** 
-
-This code only works for SOL pairs. 
-
-**Why are there "no pool keys found"?** 
-
-IF YOU ARE USING A FREE TIER RPC, THIS REPO WILL NOT WORK FOR YOU. FREE TIER RPCS DO NOT ALLOW GET_ACCOUNT_INFO_PARSED().
-
-**Does this code work on devnet?**
-
-No. 
+MIT License 
