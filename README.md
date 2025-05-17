@@ -6,7 +6,7 @@ A Python client for interacting with the Raydium DEX on Solana blockchain.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/raydium_python.git
+git clone https://github.com/ethduke/raydium_python.git
 cd raydium_python
 
 # Setup virtual environment
