@@ -43,9 +43,9 @@ from utils.pool_utils import (
     make_amm_v4_swap_instruction,
     get_amm_v4_pair_from_rpc,
 )
-from config import config
-from model.solana_provider import SolanaProvider
-from model.raydium_api import RaydiumAPI
+from raydium_python.config import config
+from raydium_python.model.solana_provider import SolanaProvider
+from raydium_python.model.raydium_api import RaydiumAPI
 
 
 class RaydiumV4:
