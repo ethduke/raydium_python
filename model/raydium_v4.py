@@ -35,8 +35,8 @@ from spl.token.instructions import (
 )
 
 # Local imports
-from utils.common_utils import confirm_txn, get_token_balance
-from utils.pool_utils import (
+from ..utils.common_utils import confirm_txn, get_token_balance
+from ..utils.pool_utils import (
     AmmV4PoolKeys,
     fetch_amm_v4_pool_keys,
     get_amm_v4_reserves,
