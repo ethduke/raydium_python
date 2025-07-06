@@ -1,7 +1,7 @@
 import base64
 import os
 import logging
-from typing import Optional, Tuple
+from typing import Optional, List
 
 # Configure logging
 logging.basicConfig(
@@ -14,14 +14,15 @@ logger = logging.getLogger(__name__)
 # Solana imports
 from solana.rpc.commitment import Processed
 from solana.rpc.types import TokenAccountOpts, TxOpts
-from solders.compute_budget import set_compute_unit_limit, set_compute_unit_price  # type: ignore
-from solders.message import MessageV0  # type: ignore
-from solders.pubkey import Pubkey  # type: ignore
+from solders.compute_budget import set_compute_unit_limit, set_compute_unit_price  
+from solders.instruction import Instruction 
+from solders.message import MessageV0 
+from solders.pubkey import Pubkey 
 from solders.system_program import (
     CreateAccountWithSeedParams,
     create_account_with_seed,
 )
-from solders.transaction import VersionedTransaction  # type: ignore
+from solders.transaction import VersionedTransaction 
 
 # SPL Token imports
 from spl.token.client import Token
@@ -149,6 +150,59 @@ class RaydiumV4:
         updated_quote_vault_balance = constant_product / (base_vault_balance + effective_tokens_sold)
         sol_received = quote_vault_balance - updated_quote_vault_balance
         return round(sol_received, 9)
+    
+    def create_versioned_swap_transaction(self, instructions: List[Instruction]) -> VersionedTransaction:
+        """
+        Create a versioned transaction for a swap operation.
+        
+        Args:
+            instructions (List[Instruction]): List of instructions to include in the transaction
+        """
+        try:
+            logger.info("Compiling transaction message")
+            compiled_message = MessageV0.try_compile(
+                self._payer.pubkey(),
+                instructions,
+                [],
+                self._client.get_latest_blockhash().value.blockhash,
+            )
+            return VersionedTransaction(compiled_message, [self._payer])
+        except Exception as e:
+            logger.error(f"Error occurred during transaction creation: {str(e)}", exc_info=True)
+            return None
+
+    
+    def execute_swap_transaction(self, instructions: List[Instruction]) -> bool:
+        """
+        Execute a swap transaction with the given instructions.
+        
+        Args:
+            instructions (List[Instruction]): List of instructions to include in the transaction
+            
+        Returns:
+            bool: True if transaction successful, False otherwise
+        """
+        try:
+            logger.info("Creating versioned transaction")
+            versioned_transaction = self.create_versioned_swap_transaction(instructions)
+
+            logger.info("Sending versioned transaction")
+            txn_sig = self._client.send_transaction(
+                txn=versioned_transaction,
+                opts=TxOpts(skip_preflight=True),
+            ).value
+            logger.info(f"Transaction Signature: {txn_sig}")
+
+            logger.info("Confirming transaction")
+            confirmed = confirm_txn(txn_sig)
+            logger.info(f"Transaction confirmed: {confirmed}")
+            
+            return confirmed
+
+        except Exception as e:
+            logger.error(f"Error occurred during transaction execution: {str(e)}", exc_info=True)
+            return False 
+    
 
     def buy(self, pair_address: str, sol_in: float = 0.01, slippage: int = 5) -> bool:
         """
@@ -265,26 +319,7 @@ class RaydiumV4:
             instructions.append(swap_instruction)
             instructions.append(close_wsol_account_instruction)
 
-            logger.info("Compiling transaction message")
-            compiled_message = MessageV0.try_compile(
-                self._payer.pubkey(),
-                instructions,
-                [],
-                self._client.get_latest_blockhash().value.blockhash,
-            )
-
-            logger.info("Sending transaction")
-            txn_sig = self._client.send_transaction(
-                txn=VersionedTransaction(compiled_message, [self._payer]),
-                opts=TxOpts(skip_preflight=True),
-            ).value
-            logger.info(f"Transaction Signature: {txn_sig}")
-
-            logger.info("Confirming transaction")
-            confirmed = confirm_txn(txn_sig)
-
-            logger.info(f"Transaction confirmed: {confirmed}")
-            return confirmed
+            return self.execute_swap_transaction(instructions)
 
         except Exception as e:
             logger.error(f"Error occurred during transaction: {str(e)}", exc_info=True)
@@ -446,26 +481,7 @@ class RaydiumV4:
                 )
                 instructions.append(close_token_account_instruction)
 
-            logger.info("Compiling transaction message")
-            compiled_message = MessageV0.try_compile(
-                self._payer.pubkey(),
-                instructions,
-                [],
-                self._client.get_latest_blockhash().value.blockhash,
-            )
-
-            logger.info("Sending transaction")
-            txn_sig = self._client.send_transaction(
-                txn=VersionedTransaction(compiled_message, [self._payer]),
-                opts=TxOpts(skip_preflight=True),
-            ).value
-            logger.info(f"Transaction Signature: {txn_sig}")
-
-            logger.info("Confirming transaction")
-            confirmed = confirm_txn(txn_sig)
-
-            logger.info(f"Transaction confirmed: {confirmed}")
-            return confirmed
+            return self.execute_swap_transaction(instructions)
 
         except Exception as e:
             logger.error(f"Error occurred during transaction: {str(e)}", exc_info=True)
