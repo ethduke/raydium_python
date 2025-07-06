@@ -1,10 +1,12 @@
 import requests
-from solana.transaction import Transaction
+from solana.transaction import VersionedTransaction
 from solana.keypair import Keypair
 from solana.publickey import PublicKey
+from solana.message import MessageV0
 from solana.transfer import TransferParams, transfer
 from typing import List, Dict, Any
 from config import config
+import random
 
 class JitoBundleClient:
     """Client for submitting Jito bundles via Helius"""
@@ -27,12 +29,12 @@ class JitoBundleClient:
     
     def get_random_tip_account(self) -> PublicKey:
         """Get a random tip account for load balancing"""
-        import random
         tip_account_str = random.choice(self.tip_accounts)
         return PublicKey(tip_account_str)
     
-    def create_tip_transaction(self, payer: Keypair, tip_amount: int) -> Transaction:
-        """Create a tip transaction to prioritize bundle"""
+    def create_tip_transaction_versioned(self, payer: Keypair, tip_amount: int):
+        """Create a versioned tip transaction to prioritize bundle"""
+        
         tip_account = self.get_random_tip_account()
         tip_instruction = transfer(
             TransferParams(
@@ -42,9 +44,23 @@ class JitoBundleClient:
             )
         )
         
-        transaction = Transaction()
-        transaction.add(tip_instruction)
-        return transaction
+        # Get latest blockhash from client
+        if not self.client:
+            raise Exception("Client not provided to JitoBundleClient")
+        
+        latest_blockhash = self.client.get_latest_blockhash().value.blockhash
+        
+        # Compile the message using MessageV0
+        compiled_message = MessageV0.try_compile(
+            payer=payer.public_key,
+            instructions=[tip_instruction],
+            address_lookup_table_accounts=[],
+            recent_blockhash=latest_blockhash,
+        )
+        
+        # Create versioned transaction
+        versioned_transaction = VersionedTransaction(compiled_message, [payer])
+        return versioned_transaction
     
     def send_bundle(self, transactions: List[str]) -> Dict[str, Any]:
         """Send a bundle of transactions to Jito via Helius"""

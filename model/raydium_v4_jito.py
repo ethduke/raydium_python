@@ -2,6 +2,7 @@ from model.raydium_v4 import RaydiumV4
 from model.jito_bundle_client import JitoBundleClient
 from solana.transaction import Transaction
 from typing import Dict, Any
+from solana.transaction import Transaction, VersionedTransaction
 import base64
 import time
 
@@ -14,23 +15,9 @@ class JitoEnhancedRaydiumV4(RaydiumV4):
         self.jito_client = JitoBundleClient()
         
     
-    def _serialize_transaction(self, transaction: Transaction) -> str:
-        """Serialize transaction for bundle submission"""
-        try:
-            # Serialize the transaction
-            serialized = transaction.serialize()
-            # Encode to base64
-            encoded = base64.b64encode(serialized).decode('utf-8')
-            return encoded
-        except Exception as e:
-            print(f"Transaction serialization error: {e}")
-            return None
-    
-        def _serialize_transaction(self, transaction) -> str:
+    def _serialize_transaction(self, transaction) -> str:
         """Serialize transaction for bundle submission (supports both Transaction and VersionedTransaction)"""
         try:
-            from solana.transaction import Transaction, VersionedTransaction
-            import base64
             
             if isinstance(transaction, VersionedTransaction):
                 # Serialize versioned transaction
