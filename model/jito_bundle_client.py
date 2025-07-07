@@ -44,7 +44,7 @@ class HeliusSenderClient:
             self.transaction_provider = None
             logger.info("HeliusSenderClient initialized without transaction confirmation")
         
-        # Jito tip accounts (from JavaScript example)
+        # Jito tip accounts 
         self.tip_accounts = [
             "4ACfpUFoaSD9bfPdeu6DBt89gB6ENTeHBXCAi87NhDEE",
             "D2L6yPZ2FmmmTKPgzaMKdhu6EWZcTpLy1Vhx8uvZe7NZ", 
@@ -63,7 +63,7 @@ class HeliusSenderClient:
         tip_account_str = random.choice(self.tip_accounts)
         return Pubkey.from_string(tip_account_str)
 
-    def send_with_jito_tips(self, transaction: VersionedTransaction, payer: Keypair, confirm_transaction: bool = False) -> Dict[str, Any]:
+    def send_with_jito_tips(self, transaction: VersionedTransaction, confirm_transaction: bool = False) -> Dict[str, Any]:
         """Send transaction via Helius with Jito tips (following JavaScript example)"""
         
         try:

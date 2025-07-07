@@ -2,48 +2,38 @@
 Example script demonstrating how to use the Raydium API with Helius Sender and bundled Jito tips
 """
 
-from model.raydium_v4_jito import HeliusEnhancedRaydiumV4
+from model.raydium_unified_jito import RaydiumUnifiedJito
 
 def main():
-    # Initialize the Raydium client with Helius Sender and Jito support
-    raydium = HeliusEnhancedRaydiumV4()
+    """
+    Demonstrate the ultimate solution: Unified Jito trading
+    """
+    print("\n" + "=" * 70)
+    print("🛡️ ULTIMATE: Unified Jito Trading (Auto Detection + MEV Protection)")
+    print("=" * 70)
     
-    # Replace with a popular token that has a Raydium pair (BONK)
-    token_mint_address = "3mNHDX54Y8FXfGAbchwpGQ6Yh16X8nvk3x8Mukjasend"  # BONK token
+    # Initialize the ultimate trader
+    trader = RaydiumUnifiedJito()
     
-    print(f"🚀 Testing Bundled Helius Sender with Jito Tips")
+    # Same token as above (BONK)
+    token_mint_address = "9E1TrvTBSwfJvHSzgyZJCipQC3v1abPN76panRg2bonk"
+    
     print(f"Token: {token_mint_address} (BONK)")
-    print("=" * 60)
+    print("\n🔍 Step 1: Auto-detecting pool type")
     
-    # Example 1: Buy with bundled Jito tip 
-    print("\n💰 Testing Buy with Bundled Jito Tip")
-    print("-" * 40)
+    # Demonstrate pool detection
+    pool_type, pair_address = trader.detect_pool_type_and_address(token_mint_address)
     
-    result = raydium.buy_with_helius_sender(
-        token_mint_address=token_mint_address,
-        sol_in=0.001,  # Small amount for testing
-        slippage=15,
-        tip_amount=1000000  # 0.001 SOL tip bundled into transaction
-    )
-    
-    if result["success"]:
-        print(f"✅ Buy transaction successful!")
-        print(f"   Signature: {result['signature']}")
-        print(f"   Method: {result['method']}")
-        print(f"   Confirmed: {result.get('confirmed', 'Unknown')}")
-        print(f"   Final Balance: {result.get('final_balance', 'Unknown')}")
-        print(f"   Tip Amount: {result['tip_amount']} lamports")
+    if pool_type and pair_address:
+        print(f"✅ Pool Type: {pool_type.value}")
+        print(f"✅ Pair Address: {pair_address}")
     else:
-        print(f"❌ Buy transaction failed: {result.get('error')}")
+        print("❌ No compatible pool found")
+        return
     
-    # Skip the other tests for now to focus on one successful transaction
-    print("\n" + "=" * 60)
-    print("🎯 Enhanced Transaction Features:")
-    print("  ✅ Professional provider architecture")
-    print("  ✅ Transaction confirmation with SolanaTransactionProvider")
-    print("  ✅ Token balance checking with SolanaTokenProvider")
-    print("  ✅ Enhanced error handling and logging")
-    print("  ✅ Structured result reporting")
+    result = trader.buy_with_jito(token_mint_address, 0.01, 5, 1000000)
+    print(result)
+
 
 if __name__ == "__main__":
     main()
