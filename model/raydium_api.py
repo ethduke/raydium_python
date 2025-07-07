@@ -1,7 +1,6 @@
-import json
 import logging
 import requests
-from typing import Any, Dict, List, Optional
+from typing import Dict
 
 from config import config
 from model.api_provider import APIProvider

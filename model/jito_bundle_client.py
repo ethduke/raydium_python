@@ -1,6 +1,5 @@
 import requests
 from solders.transaction import VersionedTransaction
-from solders.keypair import Keypair
 from solders.pubkey import Pubkey
 from solders.signature import Signature
 from typing import Dict, Any

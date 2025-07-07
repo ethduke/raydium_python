@@ -176,10 +176,10 @@ else:
 
 ### RaydiumUnifiedJito
 
-- `buy_with_jito(token_mint, sol_in, slippage, tip_amount)` - Buy tokens with MEV protection
-- `sell_with_jito(token_mint, percentage, slippage, tip_amount)` - Sell tokens with MEV protection
-- `detect_pool_type_and_address(token_mint)` - Auto-detect best pool for tok
+- `buy_with_jito(token_mint, sol_in, slippage, tip_amount)` - Buy tokens with with Jito tip
+- `sell_with_jito(token_mint, percentage, slippage, tip_amount)` - Sell tokens with Jito tip
+- `detect_pool_type_and_address(token_mint)` - Auto-detect best pool 
 
 ## License
 
-MIT License 
+GPL License 

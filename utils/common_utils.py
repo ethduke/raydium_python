@@ -3,8 +3,8 @@ import time
 import logging
 from solana.rpc.commitment import Confirmed, Processed
 from solana.rpc.types import TokenAccountOpts
-from solders.signature import Signature #type: ignore
-from solders.pubkey import Pubkey  # type: ignore
+from solders.signature import Signature 
+from solders.pubkey import Pubkey  
 from model.solana_provider import SolanaProvider
 
 # Configure logging
