@@ -8,9 +8,9 @@ from solana.rpc.types import MemcmpOpts
 from solders.instruction import AccountMeta, Instruction 
 from solders.pubkey import Pubkey 
 
-from raydium_python.model.solana_provider import SolanaProvider
-from raydium_python.model.layout_amm_v4 import LIQUIDITY_STATE_LAYOUT_V4, MARKET_STATE_LAYOUT_V3
-from raydium_python.config import config
+from model.solana_provider import SolanaProvider
+from model.layout_amm_v4 import LIQUIDITY_STATE_LAYOUT_V4, MARKET_STATE_LAYOUT_V3
+from config import config
 
 # Access constants as properties of the config instance
 WSOL = config.WSOL

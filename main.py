@@ -9,7 +9,7 @@ def main():
     raydium = HeliusEnhancedRaydiumV4()
     
     # Replace with a popular token that has a Raydium pair (BONK)
-    token_mint_address = "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"  # BONK token
+    token_mint_address = "3mNHDX54Y8FXfGAbchwpGQ6Yh16X8nvk3x8Mukjasend"  # BONK token
     
     print(f"🚀 Testing Bundled Helius Sender with Jito Tips")
     print(f"Token: {token_mint_address} (BONK)")
