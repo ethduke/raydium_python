@@ -2,7 +2,7 @@
 Tests for the RaydiumV4 class
 """
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from model.raydium_v4 import RaydiumV4
 

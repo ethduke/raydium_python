@@ -36,7 +36,10 @@ from spl.token.instructions import (
 )
 
 # Local imports
-from utils.common_utils import confirm_txn, get_token_balance
+from model.solana_provider import SolanaProvider
+from model.solana_transaction_provider import SolanaTransactionProvider
+from model.solana_token_provider import SolanaTokenProvider
+from model.raydium_api import RaydiumAPI
 from utils.pool_utils import (
     AmmV4PoolKeys,
     fetch_amm_v4_pool_keys,
@@ -45,8 +48,6 @@ from utils.pool_utils import (
     get_amm_v4_pair_from_rpc,
 )
 from config import config
-from model.solana_provider import SolanaProvider
-from model.raydium_api import RaydiumAPI
 
 
 class RaydiumV4:
@@ -68,6 +69,10 @@ class RaydiumV4:
         self._client = self._provider.rpc
         self._payer = self._provider.payer
         self._api = RaydiumAPI()
+        
+        # Initialize service providers for better architecture
+        self._transaction_provider = SolanaTransactionProvider(self._provider)
+        self._token_provider = SolanaTokenProvider(self._provider)
 
         # Constants from config
         self._wsol = config.WSOL
@@ -76,6 +81,8 @@ class RaydiumV4:
         self._token_program_id = config.TOKEN_PROGRAM_ID
         self._unit_budget = config.get_unit_budget()
         self._unit_price = config.get_unit_price()
+        
+        logger.info(f"Initialized RaydiumV4 with payer: {self._payer.pubkey()}")
 
     @staticmethod
     def calculate_minimum_amount_out(amount_out: float, slippage: int, decimal: int) -> int:
@@ -171,7 +178,36 @@ class RaydiumV4:
             logger.error(f"Error occurred during transaction creation: {str(e)}", exc_info=True)
             return None
 
-    
+    def execute_versioned_transaction(self, versioned_transaction: VersionedTransaction) -> bool:
+        """
+        Execute a versioned transaction.
+        
+        Args:
+            versioned_transaction (VersionedTransaction): The versioned transaction to execute
+            
+        Returns:
+            bool: True if transaction successful, False otherwise
+        """
+        try:
+            if not versioned_transaction:
+                logger.error("No transaction provided for execution")
+                return False
+                
+            logger.info("Sending versioned transaction")
+            txn_sig = self._client.send_transaction(
+                txn=versioned_transaction,
+                opts=TxOpts(skip_preflight=True),
+            ).value
+            logger.info(f"Transaction Signature: {txn_sig}")
+
+            logger.info("Confirming transaction using SolanaTransactionProvider")
+            confirmed = self._transaction_provider.confirm_transaction(txn_sig)
+            logger.info(f"Transaction confirmed: {confirmed}")
+            return confirmed
+        except Exception as e:
+            logger.error(f"Error executing versioned transaction: {e}")
+            return False
+
     def execute_swap_transaction(self, instructions: List[Instruction]) -> bool:
         """
         Execute a swap transaction with the given instructions.
@@ -185,26 +221,31 @@ class RaydiumV4:
         try:
             logger.info("Creating versioned transaction")
             versioned_transaction = self.create_versioned_swap_transaction(instructions)
-
-            logger.info("Sending versioned transaction")
-            txn_sig = self._client.send_transaction(
-                txn=versioned_transaction,
-                opts=TxOpts(skip_preflight=True),
-            ).value
-            logger.info(f"Transaction Signature: {txn_sig}")
-
-            logger.info("Confirming transaction")
-            confirmed = confirm_txn(txn_sig)
-            logger.info(f"Transaction confirmed: {confirmed}")
-            
-            return confirmed
-
+            return self.execute_versioned_transaction(versioned_transaction)
         except Exception as e:
             logger.error(f"Error occurred during transaction execution: {str(e)}", exc_info=True)
-            return False 
+            return False
     
+    def get_pair_address(self, token_mint_address: str) -> str:
+        """
+        Get the pair address for a given token mint address.
+        
+        Args:
+            token_mint_address (str): Mint address of the token to get the pair address for
+        """
+        logger.info(f"Looking up pair address for token mint {token_mint_address}")
+        pair_addresses = get_amm_v4_pair_from_rpc(token_mint_address)
+        
+        if not pair_addresses or len(pair_addresses) == 0:
+            logger.error(f"No trading pair found for token mint {token_mint_address}")
+            return None
+                
+        # Use the first pair address found
+        pair_address = pair_addresses[0]
+        logger.info(f"Found pair address: {pair_address}")
+        return pair_address
 
-    def buy(self, pair_address: str, sol_in: float = 0.01, slippage: int = 5) -> bool:
+    def create_buy_transaction(self, pair_address: str, sol_in: float = 0.01, slippage: int = 5) -> VersionedTransaction:
         """
         Buy tokens using SOL.
         
@@ -319,11 +360,20 @@ class RaydiumV4:
             instructions.append(swap_instruction)
             instructions.append(close_wsol_account_instruction)
 
-            return self.execute_swap_transaction(instructions)
+            return instructions
 
         except Exception as e:
             logger.error(f"Error occurred during transaction: {str(e)}", exc_info=True)
             return False
+    
+    def execute_buy_transaction(self, instructions: List[Instruction]) -> bool:
+        """
+        Execute a buy transaction with the given instructions.
+        
+        Args:
+            instructions (List[Instruction]): List of instructions to include in the transaction
+        """
+        return self.execute_swap_transaction(instructions)
 
     def buy_by_token(self, token_mint_address: str, sol_in: float = 0.01, slippage: int = 5) -> bool:
         """
@@ -338,25 +388,21 @@ class RaydiumV4:
             bool: True if transaction successful, False otherwise
         """
         try:
-            logger.info(f"Looking up pair address for token mint {token_mint_address}")
-            pair_addresses = get_amm_v4_pair_from_rpc(token_mint_address)
-            
-            if not pair_addresses or len(pair_addresses) == 0:
+            pair_address = self.get_pair_address(token_mint_address)
+            if not pair_address:
                 logger.error(f"No trading pair found for token mint {token_mint_address}")
                 return False
-                
-            # Use the first pair address found
-            pair_address = pair_addresses[0]
-            logger.info(f"Found pair address: {pair_address}")
             
-            # Call the regular buy method with the found pair address
-            return self.buy(pair_address, sol_in, slippage)
+            # Create the buy transaction and execute it
+            get_buy_instructions = self.create_buy_transaction(self.get_pair_address(token_mint_address), sol_in, slippage)
+            versioned_transaction = self.create_versioned_swap_transaction(get_buy_instructions)
+            return self.execute_versioned_transaction(versioned_transaction)
             
         except Exception as e:
             logger.error(f"Error buying token by mint address: {e}")
             return False
 
-    def sell(self, pair_address: str, percentage: int = 100, slippage: int = 5) -> bool:
+    def create_sell_transaction(self, pair_address: str, percentage: int = 100, slippage: int = 5) -> VersionedTransaction:
         """
         Sell tokens for SOL.
         
@@ -388,7 +434,7 @@ class RaydiumV4:
             logger.debug(f"Using mint address: {mint}")
 
             logger.info("Retrieving current token balance")
-            token_balance = get_token_balance(str(mint))
+            token_balance = self._token_provider.get_token_balance(mint)
             logger.info(f"Current token balance: {token_balance}")
 
             if token_balance == 0 or token_balance is None:
@@ -481,11 +527,20 @@ class RaydiumV4:
                 )
                 instructions.append(close_token_account_instruction)
 
-            return self.execute_swap_transaction(instructions)
+            return instructions
 
         except Exception as e:
             logger.error(f"Error occurred during transaction: {str(e)}", exc_info=True)
             return False
+    
+    def execute_sell_transaction(self, instructions: List[Instruction]) -> bool:
+        """
+        Execute a sell transaction with the given instructions.
+        
+        Args:
+            instructions (List[Instruction]): List of instructions to include in the transaction
+        """ 
+        return self.execute_swap_transaction(instructions)
 
     def sell_by_token(self, token_mint_address: str, percentage: int = 100, slippage: int = 5) -> bool:
         """
@@ -500,19 +555,15 @@ class RaydiumV4:
             bool: True if transaction successful, False otherwise
         """
         try:
-            logger.info(f"Looking up pair address for token mint {token_mint_address}")
-            pair_addresses = get_amm_v4_pair_from_rpc(token_mint_address)
-            
-            if not pair_addresses or len(pair_addresses) == 0:
+            pair_address = self.get_pair_address(token_mint_address)
+            if not pair_address:
                 logger.error(f"No trading pair found for token mint {token_mint_address}")
                 return False
-                
-            # Use the first pair address found
-            pair_address = pair_addresses[0]
-            logger.info(f"Found pair address: {pair_address}")
             
-            # Call the regular sell method with the found pair address
-            return self.sell(pair_address, percentage, slippage)
+            # Create the sell transaction and execute it
+            get_sell_instructions = self.create_sell_transaction(pair_address, percentage, slippage)
+            versioned_transaction = self.create_versioned_swap_transaction(get_sell_instructions)
+            return self.execute_versioned_transaction(versioned_transaction)
             
         except Exception as e:
             logger.error(f"Error selling token by mint address: {e}")

@@ -1,5 +1,3 @@
-from solana.rpc.api import Client as SolanaClient
-from solders.keypair import Keypair
 from config import Config
 
 class SolanaProvider:

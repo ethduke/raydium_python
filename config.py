@@ -117,6 +117,10 @@ class Config:
         """Get RPC client"""
         return Client(self._config['env']['helius']['rpc_url'])
 
+    def get_solana_rpc_url(self) -> str:
+        """Get RPC URL string"""
+        return self._config['env']['helius']['rpc_url']
+
     def get_unit_budget(self) -> int:
         """Get unit budget"""
         return self._config['solana']['unit_budget']
@@ -175,6 +179,11 @@ class Config:
     def OPENBOOK_PROGRAM_ID(self) -> Pubkey:
         """Get OpenBook program ID"""
         return Pubkey.from_string(self._config['programs']['openbook']['program_id'])
+
+    @property
+    def RAYDIUM_CPMM(self) -> Pubkey:
+        """Get Raydium CPMM program ID"""
+        return Pubkey.from_string(self._config['programs']['raydium']['ray_cpmm'])
 
 # Create a singleton instance
 config = Config()
