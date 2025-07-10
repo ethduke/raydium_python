@@ -3,8 +3,8 @@ import time
 import logging
 from solana.rpc.commitment import Confirmed
 from solders.signature import Signature
-from model.transaction_provider import TransactionProvider
-from model.solana_provider import SolanaProvider
+from ..interfaces.transaction_provider import TransactionProvider
+from .solana_provider import SolanaProvider
 
 logger = logging.getLogger(__name__)
 

@@ -37,9 +37,9 @@ from spl.token.instructions import (
 )
 
 # Local imports
-from model.solana_provider import SolanaProvider
-from model.solana_transaction_provider import SolanaTransactionProvider
-from model.solana_token_provider import SolanaTokenProvider
+from ..providers.solana_provider import SolanaProvider
+from ..providers.solana_transaction_provider import SolanaTransactionProvider
+from ..providers.solana_token_provider import SolanaTokenProvider
 from utils.pool_utils import (
     AmmV4PoolKeys,
     CpmmPoolKeys,

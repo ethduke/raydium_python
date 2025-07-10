@@ -8,7 +8,7 @@ from solana.rpc.types import MemcmpOpts
 from solders.instruction import AccountMeta, Instruction 
 from solders.pubkey import Pubkey 
 
-from model.solana_provider import SolanaProvider
+from model.providers.solana_provider import SolanaProvider
 from utils.layouts.layout_amm_v4 import LIQUIDITY_STATE_LAYOUT_V4, MARKET_STATE_LAYOUT_V3
 from utils.layouts.layout_cpmm import CPMM_POOL_STATE_LAYOUT
 from config import config

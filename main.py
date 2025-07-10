@@ -2,7 +2,7 @@
 Example script demonstrating how to use the Raydium API with Helius Sender and bundled Jito tips
 """
 
-from model.raydium_unified_jito import RaydiumUnifiedJito
+from model import RaydiumUnifiedJito
 
 def main():
     """

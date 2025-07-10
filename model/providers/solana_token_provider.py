@@ -5,8 +5,8 @@ from solders.pubkey import Pubkey  # type: ignore
 from solana.rpc.commitment import Processed
 from solana.rpc.types import TokenAccountOpts
 
-from model.solana_provider import SolanaProvider
-from model.token_provider import TokenProvider
+from .solana_provider import SolanaProvider
+from ..interfaces.token_provider import TokenProvider
 
 logger = logging.getLogger(__name__)
 

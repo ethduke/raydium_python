@@ -21,10 +21,10 @@ from solana.rpc.commitment import Processed
 from solana.rpc.types import TokenAccountOpts
 
 # Local imports
-from model.raydium_unified import RaydiumUnified, PoolType
-from model.jito_bundle_client import HeliusSenderClient
-from model.solana_transaction_provider import SolanaTransactionProvider
-from model.solana_token_provider import SolanaTokenProvider
+from .raydium_unified import RaydiumUnified, PoolType
+from .jito_bundle_client import HeliusSenderClient
+from ..providers.solana_transaction_provider import SolanaTransactionProvider
+from ..providers.solana_token_provider import SolanaTokenProvider
 from utils.pool_utils import DIRECTION
 
 logger = logging.getLogger(__name__)

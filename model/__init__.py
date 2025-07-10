@@ -1,19 +1,41 @@
 """
-Raydium API client for interacting with Raydium DEX on Solana blockchain.
+Raydium Trading Bot - Model Package
+
+This package provides a complete trading infrastructure for Raydium DEX with:
+- Abstract interfaces for extensibility
+- Solana blockchain providers
+- Raydium-specific trading implementations
+
+Directory Structure:
+- interfaces/: Abstract base classes
+- providers/: Solana blockchain implementations
+- raydium/: Raydium DEX specific classes
 """
 
-from .raydium_api import RaydiumAPI
-from .raydium_unified import RaydiumUnified
-from .raydium_unified_jito import RaydiumUnifiedJito
-from .solana_provider import SolanaProvider
-from .solana_token_provider import SolanaTokenProvider
-from .solana_transaction_provider import SolanaTransactionProvider
+# Import all interfaces
+from .interfaces import APIProvider, TokenProvider, TransactionProvider
 
+# Import all providers
+from .providers import SolanaProvider, SolanaTokenProvider, SolanaTransactionProvider
+
+# Import all raydium implementations
+from .raydium import RaydiumUnified, RaydiumUnifiedJito, RaydiumAPI, HeliusSenderClient
+
+# Convenience imports for backwards compatibility
 __all__ = [
-    'RaydiumAPI',
-    'RaydiumUnified',
-    'RaydiumUnifiedJito',
+    # Abstract interfaces
+    'APIProvider',
+    'TokenProvider',
+    'TransactionProvider',
+    
+    # Solana providers
     'SolanaProvider',
     'SolanaTokenProvider',
     'SolanaTransactionProvider',
+    
+    # Raydium implementations
+    'RaydiumUnified',
+    'RaydiumUnifiedJito',
+    'RaydiumAPI',
+    'HeliusSenderClient',
 ] 

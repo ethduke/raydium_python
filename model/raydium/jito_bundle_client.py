@@ -8,8 +8,8 @@ import random
 import base64
 import time
 import logging
-from model.solana_provider import SolanaProvider
-from model.solana_transaction_provider import SolanaTransactionProvider
+from ..providers.solana_provider import SolanaProvider
+from ..providers.solana_transaction_provider import SolanaTransactionProvider
 
 logger = logging.getLogger(__name__)
 

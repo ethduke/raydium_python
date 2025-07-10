@@ -41,7 +41,7 @@ ACC_PRIVATE_KEY=your_private_key
 The unified API automatically detects the best pool type and provides MEV protection through Jito bundling:
 
 ```python
-from model.raydium_unified_jito import RaydiumUnifiedJito
+from model import RaydiumUnifiedJito
 
 # Initialize the unified trader with MEV protection
 trader = RaydiumUnifiedJito()
@@ -79,7 +79,7 @@ print(f"Sell transaction: {sell_result}")
 For standard trading without MEV protection:
 
 ```python
-from model.raydium_unified import RaydiumUnified
+from model import RaydiumUnified
 
 # Initialize the unified trader
 trader = RaydiumUnified()
@@ -107,7 +107,7 @@ The unified API automatically detects and chooses between different pool types:
 2. **CPMM Pools**: Concentrated liquidity pools for better capital efficiency
 
 ```python
-from model.raydium_unified_jito import RaydiumUnifiedJito
+from model import RaydiumUnifiedJito
 
 trader = RaydiumUnifiedJito()
 

@@ -4,7 +4,7 @@ Tests for the RaydiumUnified class
 import unittest
 from unittest.mock import patch
 
-from model.raydium_unified import RaydiumUnified
+from model import RaydiumUnified
 
 class TestRaydiumUnified(unittest.TestCase):
     """Test cases for RaydiumUnified class"""

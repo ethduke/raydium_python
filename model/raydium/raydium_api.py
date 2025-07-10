@@ -3,7 +3,7 @@ import requests
 from typing import Dict
 
 from config import config
-from model.api_provider import APIProvider
+from ..interfaces.api_provider import APIProvider
 
 # Configure logging
 logger = logging.getLogger(__name__)
