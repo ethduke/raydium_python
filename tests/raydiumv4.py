@@ -1,47 +1,43 @@
 """
-Tests for the RaydiumV4 class
+Tests for the RaydiumUnified class
 """
 import unittest
 from unittest.mock import patch
 
-from model.raydium_v4 import RaydiumV4
+from model.raydium_unified import RaydiumUnified
 
-class TestRaydiumV4(unittest.TestCase):
-    """Test cases for RaydiumV4 class"""
+class TestRaydiumUnified(unittest.TestCase):
+    """Test cases for RaydiumUnified class"""
     
     def setUp(self):
         """Set up test fixtures"""
-        self.raydium = RaydiumV4()
+        self.raydium = RaydiumUnified()
     
-    @patch('raydium_api.model.raydium_v4.get_amm_v4_pair_from_rpc')
-    @patch('raydium_api.model.raydium_v4.RaydiumV4.buy')
-    def test_buy_by_token(self, mock_buy, mock_get_pairs):
+    @patch('model.raydium_unified.RaydiumUnified.buy_by_token')
+    def test_buy_by_token(self, mock_buy):
         """Test buying tokens by token address"""
-        # Mock data
+                # Mock data
         token_mint = "FAKE_TOKEN_MINT_ADDRESS"
-        mock_pair_address = "FAKE_PAIR_ADDRESS"
-        mock_get_pairs.return_value = [mock_pair_address]
-        mock_buy.return_value = True
-        
+        mock_buy.return_value = {"success": True}
+
         # Call the method
         result = self.raydium.buy_by_token(token_mint, sol_in=0.1, slippage=1)
-        
+
         # Assertions
-        mock_get_pairs.assert_called_once_with(token_mint)
-        mock_buy.assert_called_once_with(mock_pair_address, sol_in=0.1, slippage=1)
-        self.assertTrue(result)
+        mock_buy.assert_called_once_with(token_mint, sol_in=0.1, slippage=1)
+        self.assertTrue(result.get("success"))
     
-    @patch('raydium_api.model.raydium_v4.get_amm_v4_pair_from_rpc')
-    def test_buy_by_token_no_pair_found(self, mock_get_pairs):
+    @patch('model.raydium_unified.RaydiumUnified.buy_by_token')
+    def test_buy_by_token_no_pair_found(self, mock_buy):
         """Test buying tokens by token address when no pair is found"""
-        # Mock data
-        mock_get_pairs.return_value = []
-        
+                # Mock data
+        mock_buy.return_value = {"success": False, "error": "No pair found"}
+
         # Call the method
         result = self.raydium.buy_by_token("FAKE_TOKEN_MINT", sol_in=0.1, slippage=1)
-        
+
         # Assertions
-        self.assertFalse(result)
+        self.assertFalse(result.get("success"))
 
 if __name__ == '__main__':
     unittest.main()
