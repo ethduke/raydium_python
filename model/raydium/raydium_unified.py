@@ -10,6 +10,10 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - [Raydium Unified] %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
+
+# Suppress HTTP request logs from httpx 
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 logger = logging.getLogger(__name__)
 
 # Solana imports
