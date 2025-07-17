@@ -4,7 +4,7 @@ from solders.pubkey import Pubkey
 import os
 import logging
 import yaml
-from typing import Dict, Any
+from typing import Any
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -169,6 +169,16 @@ class Config:
     def SOL_DECIMAL(self) -> int:
         """Get SOL decimal"""
         return self._config['tokens']['wsol']['decimal']
+    
+    @property
+    def RENT_EXEMPT(self) -> int:
+        """Get rent exempt"""
+        return self._config['constants']['rent_exempt'] 
+    
+    @property
+    def COMPUTE_UNITS(self) -> int:
+        """Get compute units"""
+        return self._config['constants']['compute_units'] 
 
     @property
     def RAY_AUTHORITY_V4(self) -> Pubkey:
@@ -184,6 +194,11 @@ class Config:
     def RAYDIUM_CPMM(self) -> Pubkey:
         """Get Raydium CPMM program ID"""
         return Pubkey.from_string(self._config['programs']['raydium']['ray_cpmm'])
+    
+    @property
+    def RAYDIUM_LAUNCHPAD(self) -> Pubkey:
+        """Get Raydium Launchpad program ID"""
+        return Pubkey.from_string(self._config['programs']['raydium']['ray_launchpad'])
 
 # Create a singleton instance
 config = Config()

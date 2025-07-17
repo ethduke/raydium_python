@@ -2,38 +2,56 @@
 Example script demonstrating how to use the Raydium API with Helius Sender and bundled Jito tips
 """
 
-from model import RaydiumUnifiedJito
+import asyncio
+import time
 
-def main():
+from model.raydium.raydium_trader import RaydiumTrader # type: ignore
+
+async def main():
     """
-    Demonstrate the ultimate solution: Unified Jito trading
+    Demonstrate smart pool detection and trading
     """
     print("\n" + "=" * 70)
-    print("🛡️ ULTIMATE: Unified Jito Trading (Auto Detection + MEV Protection)")
+    print("🧠 SMART POOL DETECTION & TRADING")
     print("=" * 70)
     
-    # Initialize the ultimate trader
-    trader = RaydiumUnifiedJito()
+    # Initialize smart detector
+    raydium_trader = RaydiumTrader()
     
-    # Same token as above (BONK)
-    token_mint_address = "9E1TrvTBSwfJvHSzgyZJCipQC3v1abPN76panRg2bonk"
+    # Single test token - Launchpad token
+    token_mint = "4SJPkYbQhWxa5vGjDce91wg2xzada3C2h6FhZHgfbonk"
     
-    print(f"Token: {token_mint_address} (BONK)")
-    print("\n🔍 Step 1: Auto-detecting pool type")
+    print(f"\n{'='*20} TESTING TOKEN {'='*20}")
     
-    # Demonstrate pool detection
-    pool_type, pair_address = trader.detect_pool_type_and_address(token_mint_address)
+    # Detect all pool types
+    pool_results = await raydium_trader.detect_all_pool_types(token_mint)
     
-    if pool_type and pair_address:
-        print(f"✅ Pool Type: {pool_type.value}")
-        print(f"✅ Pair Address: {pair_address}")
+    # Display summary
+    print(f"\n📋 Pool Summary for {token_mint}:")
+    for pool_type, data in pool_results.items():
+        if pool_type != 'recommendation' and data:
+            print(f"   • {data['type']}: {data['address']}")
+    
+    # Execute smart trade with real buy/sell
+    print(f"\n🚀 Executing Smart Trade")
+    print("=" * 40)
+    
+    # Buy tokens
+    buy_result = await raydium_trader.execute_smart_trade(token_mint, 0.15, 5)
+    print(f"Buy result: {buy_result}")
+    
+    if buy_result.get('success'):
+        print("✅ Buy successful!")
+        
+        # Wait a moment for transaction to settle
+        time.sleep(3)
+        
+        # Sell 50% of tokens
+        sell_result = await raydium_trader.execute_smart_trade(token_mint, 0.001, 5, sell_percentage=50)
+        print(f"Sell result: {sell_result}")
     else:
-        print("❌ No compatible pool found")
-        return
-    
-    result = trader.buy_with_jito(token_mint_address, 0.01, 5, 1000000)
-    print(result)
-
+        print("❌ Buy failed, skipping sell test")
 
 if __name__ == "__main__":
-    main()
+    # Run the async main function
+    asyncio.run(main())
