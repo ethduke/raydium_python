@@ -1,14 +1,14 @@
 # Raydium Python API
 
-A comprehensive Python client for interacting with the Raydium DEX on Solana blockchain, featuring automatic pool detection, MEV protection, and unified trading interface.
+A comprehensive Python client for interacting with the Raydium DEX on Solana blockchain, featuring automatic pool detection (Raydium CPMM or Raydium v4), Jito integration.
 
 ## Features
 
-- 🔄 **Auto Pool Detection**: Automatically chooses between AMM V4 and CPMM pools
-- 🛡️ **MEV Protection**: Jito integration with bundled tips for priority execution
-- 🚀 **Unified Interface**: Single API for all pool types
-- ⚡ **High Performance**: Helius RPC endpoints for reliable execution
-- 💼 **Flexible Trading**: Support for both SOL/Token swaps by pair address or token mint
+- **Auto Pool Detection**: Automatically chooses between AMM V4 and CPMM pools
+- **MEV Protection**: Jito integration with bundled tips for priority execution
+- **Unified Interface**: Single API for all pool types
+- **High Performance**: Helius RPC endpoints for reliable execution
+- **Flexible Trading**: Support for both SOL/Token swaps by pair address or token mint
 
 ## Installation
 

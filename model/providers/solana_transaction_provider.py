@@ -38,7 +38,7 @@ class SolanaTransactionProvider(TransactionProvider):
         Returns:
             bool: True if transaction confirmed successfully, False otherwise
         """
-        retries = 1
+        retries = 3
         logger.info(f"Confirming transaction: {signature}")
         
         while retries < max_retries:
